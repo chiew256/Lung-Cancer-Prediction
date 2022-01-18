@@ -64,7 +64,7 @@ smallDifference <- which(meanDifference < 2)
 # smallDifference
 
 #Feature selection part
-boruta <- Boruta(Class ~ ., data = lungCancerDataSet, doTrace = 2, maxRuns = 100)
+boruta <- Boruta(LUNG_CANCER ~ ., data = lungCancerDataSet, doTrace = 2, maxRuns = 100)
 # print(boruta)
 
 #Plot the initial result of feature selection
@@ -198,36 +198,47 @@ shinyServer(function(input, output) {
     })
 
     output$bar <- renderPlot({
-        divorceesNum   <- sum(divorceDataSet$Class == 1)
-        nondivorceesNum <- sum(divorceDataSet$Class == 0)
+    
+        cancer_positive = lungDataSet[lungDataSet$LUNG_CANCER == 1, ]
+        cancer_negative = lungDataSet[lungDataSet$LUNG_CANCER == 0, ]
 
+        
         plotdata <- data.frame(
-            Count <- c(divorceesNum, nondivorceesNum),
-            Group <- c("Divorcees", "Non-Divorcees")
+        Count <- c( nrow(cancer_positive), nrow(cancer_negative)),
+        Group <- c("Lung cancer patient", "Non lung cancer patient")
         )
-
-        ggplot(plotdata, aes(x = Group, y = Count)) + geom_col(fill = c(" blue", "yellow"), color = "black", width = 0.5)+
-            labs(title = "Number of Divorcees and Non-Divorcees") + theme(plot.title = element_text(hjust = 0.5)) +
+        
+        ggplot(plotdata, 
+            aes(x = Group, y = Count)) + 
+            geom_col(fill = c(" blue", "yellow"), 
+            color = "black", width = 0.5)+
+            labs(title = "Number of lung cancer positive and non lung cancer negative") + 
+            theme(plot.title = element_text(hjust = 0.5)) +
             geom_text(aes(label = Count), vjust = -0.5, size = 5)
     })
 
 
     # KK
-    output$divorcemean <- renderPlot({
+    output$lungCancerMean <- renderPlot({
         plot(x = means[, 1], y = means[, 2],ylim = c(0,4), xlim = c(0,4),
-        xlab = 'Mean for Non-Divorcees',
-        ylab = 'Mean for Divorcees',
-             main = 'Attribute Means for Divorcees vs. Non-Divorcees')
+            xlab = 'Mean for Lung Cancer Positive',
+            ylab = 'Mean for Lung Cancer Negative',
+            main = 'Attribute Means for Lung Cancer Positive vs. Lung Cancer Negative')
         abline(a=0, b=1)
     })
 
+    output$plotmeans <- renderPlot({
+        plot(lung_cancer_positive ~ lung_cancer_negative, data = lungCancerDataSet, frame = FALSE,
+        mean.labels = TRUE, connect = FALSE)
+    })
+
     output$mymean <- renderPlot({
-        plot(meanDifference, main = "Difference in Attribute Means for Divorcees vs
-    Non-Divorcees", ylab = "Difference", xlab = "Attribute Number")
+        plot(meanDifference, main = "Difference in Attribute Means for Lung Cancer Positive vs. Lung Cancer Negative", 
+        ylab = "Difference", xlab = "Attribute Number")
     })
 
     output$heatmap <- renderPlot({
-        ggheatmap(divorceDataSet)
+        ggheatmap(lungCancerDataSet)
     })
 
     # SW
@@ -239,24 +250,24 @@ shinyServer(function(input, output) {
         plot(final.boruta, las = 2, cex.axis = 0.5)
     })
 
-    output$Atr9 <- renderPlot({
-        ggplot(divorce1.1, aes(x=Index, y=Atr9, col = Class))+geom_point()
+    output$SMOKING <- renderPlot({
+        ggplot(lungcancer1.1, aes(x=Index, y=SMOKING, col = LUNG_CANCER))+geom_point()
     })
 
-    output$Atr11 <- renderPlot({
-        ggplot(divorce1.1, aes(x=Index, y=Atr11, col = Class))+geom_point()
+    output$FATIGUE <- renderPlot({
+        ggplot(lungacncer1.1, aes(x=Index, y=FATIGUE, col = LUNG_CANCER))+geom_point()
     })
 
-    output$Atr26 <- renderPlot({
-        ggplot(divorce1.1, aes(x=Index, y=Atr26, col = Class))+geom_point()
+    output$ALCOHOL_CONSUMING <- renderPlot({
+        ggplot(lungcancer1.1, aes(x=Index, y=ALCOHOL_CONSUMING, col = LUNG_CANCER))+geom_point()
     })
 
-    output$Atr18 <- renderPlot({
-        ggplot(divorce1.1, aes(x=Index, y=Atr18, col = Class))+geom_point()
+    output$COUGHING <- renderPlot({
+        ggplot(lungcancer1.1, aes(x=Index, y=COUGHING, col = LUNG_CANCER))+geom_point()
     })
 
-    output$Atr40 <- renderPlot({
-        ggplot(divorce1.1, aes(x=Index, y=Atr40, col = Class))+geom_point()
+    output$SWALLOWING_DIFFICULTY <- renderPlot({
+        ggplot(lungcancer1.1, aes(x=Index, y=SWALLOWING_DIFFICULTY, col = LUNG_CANCER))+geom_point()
     })
 
 
