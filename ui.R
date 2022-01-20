@@ -19,27 +19,54 @@ shinyUI(fluidPage(
     # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel( 
-            radioButtons("SMOKING", "1. Smoking", 
-                        choices = list("Choice 1" = "Yes", "Choice 2" = "No",), selected = "Yes")),
+            radioButtons("GENDER", "1. Gender", 
+                        choices = list("Male" = "MALE", "Female" = "FEMALE"), selected = "MALE"),
+
+            radioButtons("YELLOW_FINGERS", "2. Yellow Fingers", 
+                        choices = list("Yes" = 1, "No" = 0), selected = 1),
+
+            radioButtons("ANXIETY", "3. Anxiety", 
+                        choices = list("Yes" = 1, "No" = 0), selected = 1),
+
+            radioButtons("PEER_PRESSURE", "4. Peer Pressure", 
+                        choices = list("Yes" = 1, "No" = 0), selected = 1),   
+
+            radioButtons("CHRONIC_DISEASE", "5. Chronic Disease", 
+                        choices = list("Yes" = 1, "No" = 0), selected = 1),   
+            
+            # radioButtons("SMOKING", "1. Smoking", 
+            #             choices = list("Yes" = 1, "No" = 0), selected = 1),
             
             
-            radioButtons("FATIGUE", "2. Fatigue", 
-                        choices = list("Choice 1" = "Yes", "Choice 2" = "No",), selected = "Yes")),
+            radioButtons("FATIGUE", "6. Fatigue", 
+                        choices = list("Yes" = 1, "No" = 0), selected = 1),
+
+            radioButtons("ALLERGY", "7. Allergy", 
+                        choices = list("Yes" = 1, "No" = 0), selected = 1), 
+
+            radioButtons("WHEEZING", "8. Wheezing", 
+                        choices = list("Yes" = 1, "No" = 0), selected = 1),   
             
             
-            radioButtons("ALCOHOL_CONSUMING", "3. Alcohol Consuming", 
-                        choices = list("Choice 1" = "Yes", "Choice 2" = "No",), selected = "Yes")),
+            radioButtons("ALCOHOL_CONSUMING", "9. Alcohol Consuming", 
+                        choices = list("Yes" = 1, "No" = 0), selected = 1),
+    
+            radioButtons("COUGHING", "10. Coughing", 
+                        choices = list("Yes" = 1, "No" = 0), selected = 1),
+
+            radioButtons("SHORTNESS_OF_BREATH", "11. Shortness of Breath", 
+                        choices = list("Yes" = 1, "No" = 0), selected = 1),
            
-            radioButtons("COUGHING", "4. Coughing", 
-                        choices = list("Choice 1" = "Yes", "Choice 2" = "No",), selected = "Yes")),
-           
             
-            radioButtons("SWALLOWING_DIFFICULTY", "5. Swallowing Difficulty", 
-                        choices = list("Choice 1" = "Yes", "Choice 2" = "No",), selected = "Yes")),
+            radioButtons("SWALLOWING_DIFFICULTY", "12. Swallowing Difficulty", 
+                        choices = list("Yes" = 1, "No" = 0), selected = 1),
+
+            radioButtons("CHEST_PAIN", "13. Chest Pain", 
+                        choices = list("Yes" = 1, "No" = 0), selected = 1),
             
             helpText("Note: Choose Yes if you have these symptoms."),
             helpText("Note: Choose No if you don't have these symptoms."),
-            
+          
             submitButton("Submit"),
             
             p("Submit your choices and see your result!")
@@ -74,13 +101,21 @@ shinyUI(fluidPage(
                                 'The 4th plot is a Scatter Plot which shows the difference in attribute means for the people getting lung cancer against who does not.',
                                 h3('Feature Selection'),
                                 'In this tabset, you will be able to view the Initial & Finalized Feature Selection.
-        We have selected the top 5 most significant factors affecting lung cancer 
+        We have selected the top 13 most significant factors affecting lung cancer 
                                 rate based on the box plot for each attribute in our dataset.',
-                                h5('Question 1 corresponds to attribute Smoking).'),
-                                h5('Question 2 corresponds to attribute Fatigue.'),
-                                h5('Question 3 corresponds to attribute Alcohol Consuming.'),
-                                h5('Question 4 corresponds to attribute Coughing.'),
-                                h5('Question 5 corresponds to attribute Swallowing Difficulty.'),
+                                h5('Question 1 corresponds to attribute Gender.'),
+                                h5('Question 2 corresponds to attribute Yellow Fingers.'),
+                                h5('Question 3 corresponds to attribute Anxiety.'),
+                                h5('Question 4 corresponds to attribute Peer Pressure.'),
+                                h5('Question 5 corresponds to attribute Chronic Disease.'),
+                                h5('Question 6 corresponds to attribute Fatigue.'),
+                                h5('Question 7 corresponds to attribute Allergy.'),
+                                h5('Question 8 corresponds to attribute Wheezing.'),
+                                h5('Question 9 corresponds to attribute Alcohol Consuming.'),
+                                h5('Question 10 corresponds to attribute Coughing.'),
+                                h5('Question 11 corresponds to attribute Shortness of Breath.'),
+                                h5('Question 12 corresponds to attribute Swallowing Difficulty.'),
+                                h5('Question 13 corresponds to attribute Chest Pain.'),
                                 'To prove how well-separated the data are, we have plotted each attribute vs. the distribution of the classes they belong to.',
                                 
                                 h3('Prediction Model'),
@@ -112,7 +147,7 @@ shinyUI(fluidPage(
                                 plotOutput("lungCancerMean"),
                                 
                                 h3("Difference in Mean for each attribute"),
-                                plotOutput("mymean"),
+                                plotOutput("mymean")
                                 ),
 
                        tabPanel("Feature Selection",
@@ -122,12 +157,20 @@ shinyUI(fluidPage(
                                 h3('Finalized Feature Selection', align='center'),
                                 plotOutput('finalizedFeatureSelection'),
 
-                                h3('Attribute value vs Class', align='center'),
-                                h4('Smoking' , align='center'), plotOutput('SMOKING'),
-                                h4('Fatigue', align='center'), plotOutput('FATIGUE'),
-                                h4('Alcohol Consuming', align='center'), plotOutput('ALCOHOL_CONSUMING'),
-                                h4('Coughing', align='center'), plotOutput('COUGHING'),
-                                h4('Swalloing Difficulty', align='center'), plotOutput('SWALLOWING_DIFFICULTY')
+                                h3('Attribute value vs Lung Cancer', align='center'),
+                                h4('GENDER' , align='center'), plotOutput('GENDER'),
+                                h4('YELLOW_FINGERS' , align='center'), plotOutput('YELLOW_FINGERS'),
+                                h4('ANXIETY' , align='center'), plotOutput('ANXIETY'),
+                                h4('PEER_PRESSURE' , align='center'), plotOutput('PEER_PRESSURE'),
+                                h4('CHRONIC_DISEASE' , align='center'), plotOutput('CHRONIC_DISEASE'),
+                                h4('FATIGUE' , align='center'), plotOutput('FATIGUE'),
+                                h4('ALLERGY' , align='center'), plotOutput('ALLERGY'),
+                                h4('WHEEZING' , align='center'), plotOutput('WHEEZING'),
+                                h4('ALCOHOL_CONSUMING' , align='center'), plotOutput('ALCOHOL_CONSUMING'),
+                                h4('COUGHING' , align='center'), plotOutput('COUGHING'),
+                                h4('SHORTNESS_OF_BREATH' , align='center'), plotOutput('SHORTNESS_OF_BREATH'),
+                                h4('SWALLOWING_DIFFICULTY' , align='center'), plotOutput('SWALLOWING_DIFFICULTY'),
+                                h4('CHEST_PAIN' , align='center'), plotOutput('CHEST_PAIN'),
                                 ),
 
                        tabPanel("Prediction Model",

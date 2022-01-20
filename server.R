@@ -21,21 +21,21 @@ library(plotly)
 library(knitr)
 
 #Read the survey_lung_cancer.csv file to be examined
-lungCancerDataSet <- read.csv("survey_lung_cancer.csv", header = TRUE, sep',')
+lungCancerDataSet <- read.csv("survey_lung_cancer.csv", header = TRUE, sep=',')
 
 
 #separate into positive and negative class, the lung_cancer_positive &
 #lung_cancer_negative are used for data analysis
-lung_cancer_positive = lungCancerDataSet[lungCancerDataSet$LUNG_CANCER==1]
-lung_cancer_negative = lungCancerDataSet[lungCancerDataSet$LUNG_CANCER==0]
+lung_cancer_positive = lungCancerDataSet[lungCancerDataSet$LUNG_CANCER==1, ]
+lung_cancer_negative = lungCancerDataSet[lungCancerDataSet$LUNG_CANCER==0, ]
 nrow(lung_cancer_positive)
 nrow(lung_cancer_negative)
 # View(lung_cancer_negative)
 
 
 #Examination of the  data
-lungCancerNum <- length(lung_cancer_positive$Class)
-notLungCancerNum <- length(lung_cancer_negative$Class)
+lungCancerNum <- length(lung_cancer_positive$LUNG_CANCER)
+notLungCancerNum <- length(lung_cancer_negative$LUNG_CANCER)
 # print(list(lungCancerNum, notLungCancerNum))
 
 
@@ -85,9 +85,11 @@ selectedFeatures <- as.vector(selectedFeatures)
 
 #################################################################################################################
 #################################################################################################################
-selectedFeatures <- selectedFeatures[selectedFeatures %in% c("SMOKING", "FATIGUE", "ALCOHOL_CONSUMING", "COUGHING", "SWALLOWING_DIFFICULTY")]
+# selectedFeatures <- selectedFeatures[selectedFeatures %in% c("SMOKING", "FATIGUE", "ALCOHOL_CONSUMING", "COUGHING", "SWALLOWING_DIFFICULTY")]
 #################################################################################################################
 #################################################################################################################
+
+selectedFeatures <- selectedFeatures[selectedFeatures %in% c("GENDER", "YELLOW_FINGERS", "ANXIETY", "PEER_PRESSURE", "CHRONIC_DISEASE", "FATIGUE", "ALLERGY", "WHEEZING", "ALCOHOL_CONSUMING", "COUGHING", "SHORTNESS_OF_BREATH",  "SWALLOWING_DIFFICULTY", "CHEST_PAIN")]
 
 
 #Creating the traning and testing set
@@ -96,16 +98,12 @@ train <- lungCancerDataSet[sample, ]
 test <- lungCancerDataSet[!sample, ]
 
 #Train the logistic regression model
-model <- brglm(LUNG_CANCER~SMOKING + FATIGUE  + ALCOHOL_CONSUMING + COUGHING + SWALLOWING_DIFFICULTY , family = binomial, data = train)
+model <- brglm(LUNG_CANCER~GENDER + YELLOW_FINGERS + ANXIETY + PEER_PRESSURE + CHRONIC_DISEASE + FATIGUE + ALLERGY + WHEEZING + ALCOHOL_CONSUMING + COUGHING + SHORTNESS_OF_BREATH + SWALLOWING_DIFFICULTY + CHEST_PAIN , family = binomial, data = train)
 
 # summary(model)
 
 #Accesing model fit using McFadden's R Square metric, value is between 0 and 1, the higher the value better
 pscl::pR2(model)["McFadden"]
-
-#Test the model using one testing set below
-couple <- data.frame(SMOKING = 4, FATIGUE = 4, ALCOHOL_CONSUMING = 1, COUGHING = 3, SWALLOWING_DIFFICULTY = 2)
-predict(model, couple, type = "response")
 
 #Test the model using whole testing set
 predicted <- predict(model, test, type = "response")
@@ -166,11 +164,11 @@ par(mar=c(5.1, 5.1, 5.1, 5.1))
 
 shinyServer(function(input, output) {
     lungCancerRate <- reactive({
-        couple <- data.frame(SMOKING = input$SMOKING, FATIGUE = input$FATIGUE, ALCOHOL_CONSUMING =
-                                 input$ALCOHOL_CONSUMING, COUGHING = input$COUGHING, SWALLOWING_DIFFICULTY = input$SWALLOWING_DIFFICULTY)
+        couple <- data.frame(GENDER = input$GENDER, YELLOW_FINGERS = as.numeric(input$YELLOW_FINGERS), ANXIETY = as.numeric(input$ANXIETY), PEER_PRESSURE = as.numeric(input$PEER_PRESSURE), CHRONIC_DISEASE = as.numeric(input$CHRONIC_DISEASE),  FATIGUE = as.numeric(input$FATIGUE), ALLERGY = as.numeric(input$ALLERGY), WHEEZING = as.numeric(input$WHEEZING), 
+                                ALCOHOL_CONSUMING = as.numeric(input$ALCOHOL_CONSUMING), COUGHING = as.numeric(input$COUGHING), SHORTNESS_OF_BREATH = as.numeric(input$SHORTNESS_OF_BREATH), SWALLOWING_DIFFICULTY = as.numeric(input$SWALLOWING_DIFFICULTY), CHEST_PAIN = as.numeric(input$CHEST_PAIN))
 
         lungCancerRate <- predict(model, couple, type = "response")
-        lungCancerRate <- 1 - lungCancerRate
+        # lungCancerRate <- 1 - lungCancerRate
         names(lungCancerRate) <- NULL
         lungCancerRate
     })
@@ -199,8 +197,8 @@ shinyServer(function(input, output) {
 
     output$bar <- renderPlot({
     
-        cancer_positive = lungDataSet[lungDataSet$LUNG_CANCER == 1, ]
-        cancer_negative = lungDataSet[lungDataSet$LUNG_CANCER == 0, ]
+        cancer_positive = lungCancerDataSet[lungCancerDataSet$LUNG_CANCER == 1, ]
+        cancer_negative = lungCancerDataSet[lungCancerDataSet$LUNG_CANCER == 0, ]
 
         
         plotdata <- data.frame(
@@ -250,24 +248,52 @@ shinyServer(function(input, output) {
         plot(final.boruta, las = 2, cex.axis = 0.5)
     })
 
-    output$SMOKING <- renderPlot({
-        ggplot(lungcancer1.1, aes(x=Index, y=SMOKING, col = LUNG_CANCER))+geom_point()
+    # output$SMOKING <- renderPlot({
+    #     ggplot(lungcancer1.1, aes(x=Index, y=SMOKING, col = LUNG_CANCER))+geom_point()
+    # })
+
+    output$GENDER <- renderPlot({
+        ggplot(lungcancer1.1, aes(x=Index, y=GENDER, col = LUNG_CANCER))+geom_point()
+    })
+    output$YELLOW_FINGERS <- renderPlot({
+        ggplot(lungcancer1.1, aes(x=Index, y=YELLOW_FINGERS, col = LUNG_CANCER))+geom_point()
+    })
+    output$ANXIETY <- renderPlot({
+        ggplot(lungcancer1.1, aes(x=Index, y=ANXIETY, col = LUNG_CANCER))+geom_point()
+    })
+
+    output$PEER_PRESSURE <- renderPlot({
+        ggplot(lungcancer1.1, aes(x=Index, y=PEER_PRESSURE, col = LUNG_CANCER))+geom_point()
+    })
+
+    output$CHRONIC_DISEASE <- renderPlot({
+        ggplot(lungcancer1.1, aes(x=Index, y=CHRONIC_DISEASE, col = LUNG_CANCER))+geom_point()
     })
 
     output$FATIGUE <- renderPlot({
-        ggplot(lungacncer1.1, aes(x=Index, y=FATIGUE, col = LUNG_CANCER))+geom_point()
+        ggplot(lungcancer1.1, aes(x=Index, y=FATIGUE, col = LUNG_CANCER))+geom_point()
     })
 
+    output$ALLERGY <- renderPlot({
+        ggplot(lungcancer1.1, aes(x=Index, y=ALLERGY, col = LUNG_CANCER))+geom_point()
+    })
+    output$WHEEZING <- renderPlot({
+        ggplot(lungcancer1.1, aes(x=Index, y=WHEEZING, col = LUNG_CANCER))+geom_point()
+    })
     output$ALCOHOL_CONSUMING <- renderPlot({
         ggplot(lungcancer1.1, aes(x=Index, y=ALCOHOL_CONSUMING, col = LUNG_CANCER))+geom_point()
     })
-
     output$COUGHING <- renderPlot({
         ggplot(lungcancer1.1, aes(x=Index, y=COUGHING, col = LUNG_CANCER))+geom_point()
     })
-
+    output$SHORTNESS_OF_BREATH <- renderPlot({
+        ggplot(lungcancer1.1, aes(x=Index, y=SHORTNESS_OF_BREATH, col = LUNG_CANCER))+geom_point()
+    })
     output$SWALLOWING_DIFFICULTY <- renderPlot({
         ggplot(lungcancer1.1, aes(x=Index, y=SWALLOWING_DIFFICULTY, col = LUNG_CANCER))+geom_point()
+    })
+    output$CHEST_PAIN <- renderPlot({
+        ggplot(lungcancer1.1, aes(x=Index, y=CHEST_PAIN, col = LUNG_CANCER))+geom_point()
     })
 
 
